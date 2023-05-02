@@ -6,7 +6,10 @@ SECRET_KEY = 'django-insecure-6r^=zj#f32yn7xn!$3@=d%*qn=*9osof9l70cmi(xfn@tfwdp6
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -98,3 +101,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 INTERNAL_IPS = [
     '127.0.0.1',
 ]
+
+CSRF_FAILURE_VIEW = 'core.views.handler403crf'
