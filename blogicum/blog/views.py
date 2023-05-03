@@ -7,25 +7,9 @@ from django.utils.timezone import make_aware
 from django.views.generic import ListView, DetailView, UpdateView
 
 from blog.models import Post, Category
+from core.forms import ProfileEdit
 
 User = get_user_model()
-
-
-def index(request):
-    template = 'blog/index.html'
-    post_list = Post.objects.select_related(
-        'author',
-        'category',
-        'location',
-    ).filter(
-        pub_date__lt=make_aware(datetime.now()),
-        is_published=True,
-        category__is_published=True,
-    )[:5]
-    context = {
-        'post_list': post_list,
-    }
-    return render(request, template, context)
 
 
 def category_posts(request, category_slug):
@@ -59,7 +43,7 @@ def profile(request, username):
         'location',
         'author',
         'category'
-    ).filter(author__username=username)
+    ).filter(author__username=username).order_by('-pub_date')
     paginator = Paginator(post_list, 10)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
@@ -70,9 +54,20 @@ def profile(request, username):
     return render(request, template, context)
 
 
+def edit_profile(request):
+    template = 'blog/user.html'
+    form = ProfileEdit(instance=request.user)
+    context = {
+        'form': form,
+    }
+    if form.is_valid():
+        form.save()
+    return render(request, template, context)
+
+
 class PostListView(ListView):
     model = Post
-    ordering = 'id'
+    ordering = '-pub_date'
     paginate_by = 10
     template_name = 'blog/index.html'
     queryset = Post.objects.select_related(
@@ -86,7 +81,3 @@ class PostDetailView(DetailView):
     model = Post
     template_name = 'blog/detail.html'
     queryset = Post.objects.select_related('author', 'category', 'location')
-
-
-def edit_profile(request):
-    return None
