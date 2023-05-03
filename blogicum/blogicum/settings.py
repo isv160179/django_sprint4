@@ -109,3 +109,6 @@ EMAIL_FILE_PATH = BASE_DIR / 'sent_emails'
 
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'blog:index'
+
+MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_URL = 'media/'

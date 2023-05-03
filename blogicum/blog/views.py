@@ -25,7 +25,7 @@ def category_posts(request, category_slug):
     ).filter(
         category__slug=category_slug,
         pub_date__date__lte=make_aware(datetime.now()),
-    )
+    ).order_by('-pub_date')
     paginator = Paginator(post_list, 10)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
