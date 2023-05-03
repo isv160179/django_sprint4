@@ -1,14 +1,13 @@
 from datetime import datetime
 
 from django.contrib.auth import get_user_model
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy, reverse
 from django.utils.timezone import make_aware
-from django.views.generic import ListView, DetailView, UpdateView, DeleteView, \
-    CreateView
+from django.views.generic import \
+    ListView, DetailView, UpdateView, DeleteView, CreateView
 
 from blog.forms import PostForm
 from blog.models import Post, Category
@@ -71,6 +70,14 @@ def edit_profile(request):
     return render(request, template, context)
 
 
+class UserPermissionsDispatcherPost:
+    def dispatch(self, request, *args, **kwargs):
+        post = get_object_or_404(Post, pk=kwargs['pk'])
+        if post.author != request.user:
+            return redirect(post)
+        return super().dispatch(request, *args, **kwargs)
+
+
 class PostListView(ListView):
     model = Post
     ordering = '-pub_date'
@@ -106,17 +113,21 @@ class PostCreateView(LoginRequiredMixin, CreateView):
         return reverse('blog:profile', kwargs={'username': self.request.user})
 
 
-class PostEditView(LoginRequiredMixin, UpdateView):
+class PostEditView(
+    LoginRequiredMixin,
+    UserPermissionsDispatcherPost,
+    UpdateView
+):
     model = Post
     form_class = PostForm
     template_name = 'blog/create.html'
 
-    def dispatch(self, request, *args, **kwargs):
-        post = get_object_or_404(Post, pk=kwargs['pk'])
-        if post.author != request.user:
-            return redirect(post)
-        return super().dispatch(request, *args, **kwargs)
 
+class PostDeleteView(
+    LoginRequiredMixin,
+    UserPermissionsDispatcherPost,
+    DeleteView
+):
+    model = Post
+    success_url = reverse_lazy('blog:index')
 
-class PostDeleteView(DeleteView):
-    pass
