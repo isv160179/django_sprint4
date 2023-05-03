@@ -2,6 +2,7 @@ from django.urls import path
 
 from . import views
 
+
 app_name = 'blog'
 
 urlpatterns = [
@@ -20,12 +21,29 @@ urlpatterns = [
         views.category_posts,
         name='category_posts'
     ),
-    path('profile/<slug:username>/',
-         views.profile,
-         name='profile'
-         ),
-    path('edit_profile/',
-         views.edit_profile,
-         name='edit_profile'
-         )
+    path(
+        'profile/<slug:username>/',
+        views.profile,
+        name='profile'
+    ),
+    path(
+        'edit_profile/',
+        views.edit_profile,
+        name='edit_profile'
+    ),
+    path(
+        'posts/create/',
+        views.PostCreateView.as_view(),
+        name='create_post'
+    ),
+    path(
+        'posts/<int:pk>/edit/',
+        views.PostEditView.as_view(),
+        name='edit_post'
+    ),
+    path(
+        'posts/<int:pk>/delete/',
+        views.PostDeleteView.as_view(),
+        name='delete_post'
+    ),
 ]

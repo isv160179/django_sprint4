@@ -1,11 +1,16 @@
 from datetime import datetime
 
 from django.contrib.auth import get_user_model
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
+from django.urls import reverse_lazy, reverse
 from django.utils.timezone import make_aware
-from django.views.generic import ListView, DetailView, UpdateView
+from django.views.generic import ListView, DetailView, UpdateView, DeleteView, \
+    CreateView
 
+from blog.forms import PostForm
 from blog.models import Post, Category
 from core.forms import ProfileEdit
 
@@ -24,6 +29,7 @@ def category_posts(request, category_slug):
         'category'
     ).filter(
         category__slug=category_slug,
+        is_published=True,
         pub_date__date__lte=make_aware(datetime.now()),
     ).order_by('-pub_date')
     paginator = Paginator(post_list, 10)
@@ -74,6 +80,10 @@ class PostListView(ListView):
         'author',
         'category',
         'location',
+    ).filter(
+        is_published=True,
+        category__is_published=True,
+        pub_date__lte=datetime.now()
     )
 
 
@@ -81,3 +91,32 @@ class PostDetailView(DetailView):
     model = Post
     template_name = 'blog/detail.html'
     queryset = Post.objects.select_related('author', 'category', 'location')
+
+
+class PostCreateView(LoginRequiredMixin, CreateView):
+    model = Post
+    form_class = PostForm
+    template_name = 'blog/create.html'
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse('blog:profile', kwargs={'username': self.request.user})
+
+
+class PostEditView(LoginRequiredMixin, UpdateView):
+    model = Post
+    form_class = PostForm
+    template_name = 'blog/create.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        post = get_object_or_404(Post, pk=kwargs['pk'])
+        if post.author != request.user:
+            return redirect(post)
+        return super().dispatch(request, *args, **kwargs)
+
+
+class PostDeleteView(DeleteView):
+    pass
