@@ -47,7 +47,17 @@ urlpatterns = [
     ),
     path(
         'comment/<int:pk>/',
-        views.CommentCreateView.as_view(),
+        views.create_comment,
         name='add_comment'
-    )
+    ),
+    path(
+        'comment/<int:post_pk>/<int:comment_pk>/edit/',
+        views.edit_comment,
+        name='edit_comment'
+    ),
+    path(
+        'comment/<int:post_pk>/<int:comment_pk>/delete/',
+        views.delete_comment,
+        name='delete_comment'
+    ),
 ]

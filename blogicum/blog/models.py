@@ -80,6 +80,10 @@ class Post(PublishedCreatedModel):
         upload_to='posts_img',
         blank=True
     )
+    comment_count = models.PositiveIntegerField(
+        'Количество комментариев',
+        default=0
+    )
 
     class Meta:
         verbose_name = 'публикация'
@@ -109,3 +113,6 @@ class Commentary(models.Model):
 
     def __str__(self):
         return self.text
+
+    def get_absolute_url(self):
+        return reverse('blog:post_detail', kwargs={'pk': self.post_comment.pk})

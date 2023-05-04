@@ -72,6 +72,7 @@ class PostAdmin(admin.ModelAdmin):
 @admin.register(Commentary)
 class CommentaryAdmin(admin.ModelAdmin):
     list_display = (
+        'id',
         'text',
         'post_comment',
         'created_at',

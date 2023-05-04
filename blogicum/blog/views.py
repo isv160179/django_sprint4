@@ -4,6 +4,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
+from django.db.models import Count
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy, reverse
 from django.utils.timezone import make_aware
@@ -136,20 +137,37 @@ class PostDeleteView(LoginRequiredMixin,
     success_url = reverse_lazy('blog:index')
 
 
-class CommentCreateView(LoginRequiredMixin,
-                        CreateView):
-    post_comment = None
-    model = Commentary
-    form_class = CommentForm
+@login_required
+def create_comment(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+    form = CommentForm(request.POST)
+    if form.is_valid():
+        comment = form.save(commit=False)
+        comment.author = request.user
+        post.comment_count += 1
+        post.save()
+        print(post.comment_count)
+        comment.post_comment = post
+        comment.save()
+    return redirect('blog:post_detail', pk=pk)
 
-    def dispatch(self, request, *args, **kwargs):
-        self.post_comment = get_object_or_404(Post, pk=kwargs['pk'])
-        return super().dispatch(request, *args, **kwargs)
 
-    def form_valid(self, form):
-        form.instance.author = self.request.user
-        form.instance.post_comment = self.post_comment
-        return super().form_valid(form)
+@login_required
+def delete_comment(request, post_pk, comment_pk):
+    comment = get_object_or_404(Commentary, pk=comment_pk)
+    if comment.author == request.user:
+        post = get_object_or_404(Post, pk=post_pk)
+        post.comment_count -= 1
+        post.save()
+        comment.delete()
+    return redirect('blog:post_detail', post_pk)
 
-    def get_success_url(self):
-        return reverse('blog:post_detail', kwargs={'pk': self.post_comment.pk})
+
+@login_required
+def edit_comment(request, post_pk, comment_pk):
+    comment = get_object_or_404(Commentary, pk=comment_pk)
+    if comment.author == request.user:
+        form = CommentForm(instance=comment)
+        if form.is_valid():
+            form.save()
+    return redirect('blog:post_detail', post_pk)
