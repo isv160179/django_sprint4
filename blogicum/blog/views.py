@@ -10,8 +10,8 @@ from django.utils.timezone import make_aware
 from django.views.generic import \
     ListView, DetailView, UpdateView, DeleteView, CreateView
 
-from blog.forms import PostForm, CommentaryForm
-from blog.models import Post, Category
+from blog.forms import PostForm, CommentForm
+from blog.models import Post, Category, Commentary
 from core.forms import ProfileEdit
 
 User = get_user_model()
@@ -100,8 +100,15 @@ class PostDetailView(DetailView):
     template_name = 'blog/detail.html'
     queryset = Post.objects.select_related('author', 'category', 'location')
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['form'] = CommentForm()
+        context['comments'] = (self.object.comments.select_related('author'))
+        return context
 
-class PostCreateView(LoginRequiredMixin, CreateView):
+
+class PostCreateView(LoginRequiredMixin,
+                     CreateView):
     model = Post
     form_class = PostForm
     template_name = 'blog/create.html'
@@ -114,20 +121,35 @@ class PostCreateView(LoginRequiredMixin, CreateView):
         return reverse('blog:profile', kwargs={'username': self.request.user})
 
 
-class PostEditView(
-    LoginRequiredMixin,
-    UserPermissionsDispatcherPost,
-    UpdateView
-):
+class PostEditView(LoginRequiredMixin,
+                   UserPermissionsDispatcherPost,
+                   UpdateView):
     model = Post
     form_class = PostForm
     template_name = 'blog/create.html'
 
 
-class PostDeleteView(
-    LoginRequiredMixin,
-    UserPermissionsDispatcherPost,
-    DeleteView
-):
+class PostDeleteView(LoginRequiredMixin,
+                     UserPermissionsDispatcherPost,
+                     DeleteView):
     model = Post
     success_url = reverse_lazy('blog:index')
+
+
+class CommentCreateView(LoginRequiredMixin,
+                        CreateView):
+    post_comment = None
+    model = Commentary
+    form_class = CommentForm
+
+    def dispatch(self, request, *args, **kwargs):
+        self.post_comment = get_object_or_404(Post, pk=kwargs['pk'])
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        form.instance.post_comment = self.post_comment
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse('blog:post_detail', kwargs={'pk': self.post_comment.pk})

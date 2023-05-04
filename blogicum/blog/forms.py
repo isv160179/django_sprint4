@@ -13,7 +13,7 @@ class PostForm(ModelForm):
         }
 
 
-class CommentaryForm(ModelForm):
+class CommentForm(ModelForm):
     class Meta:
         model = Commentary
         fields = ('text',)

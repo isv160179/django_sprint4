@@ -92,10 +92,9 @@ class Post(PublishedCreatedModel):
         return reverse('blog:post_detail', kwargs={'pk': self.pk})
 
 
-
 class Commentary(models.Model):
     text = models.TextField('Текст комментария')
-    post = models.ForeignKey(
+    post_comment = models.ForeignKey(
         Post,
         on_delete=models.CASCADE,
         related_name='comments',
@@ -105,3 +104,8 @@ class Commentary(models.Model):
 
     class Meta:
         ordering = ('created_at',)
+        verbose_name = 'комментарий'
+        verbose_name_plural = 'Комментарии'
+
+    def __str__(self):
+        return self.text

@@ -1,7 +1,8 @@
 from django.contrib import admin
+from django.utils.safestring import mark_safe
 
 from core.admin import BlogInlineAdmin
-from .models import Category, Location, Post
+from .models import Category, Location, Post, Commentary
 
 admin.site.empty_value_display = 'Не задано'
 admin.site.site_header = "Администратор БЛОГА"
@@ -35,6 +36,7 @@ class LocationAdmin(BlogInlineAdmin):
 class PostAdmin(admin.ModelAdmin):
     list_display = (
         'title',
+        'get_image',
         'text',
         'pub_date',
         'author',
@@ -58,4 +60,28 @@ class PostAdmin(admin.ModelAdmin):
     )
     list_display_links = (
         'title',
+    )
+
+    def get_image(self, post):
+        if post.image:
+            return mark_safe(f"<img src='{post.image.url}' width=70>")
+
+    get_image.short_description = 'Изображение'
+
+
+@admin.register(Commentary)
+class CommentaryAdmin(admin.ModelAdmin):
+    list_display = (
+        'text',
+        'post_comment',
+        'created_at',
+        'author'
+    )
+    search_fields = (
+        'text',
+        'post_comment',
+        'author'
+    )
+    list_display_links = (
+        'text',
     )
