@@ -6,7 +6,7 @@ from blog.models import Post, Commentary
 class PostForm(ModelForm):
     class Meta:
         model = Post
-        exclude = ('is_published', 'author',)
+        exclude = ('is_published', 'author', 'comment_count')
         widgets = {
             'pub_date': DateTimeInput(
                 attrs={'type': 'datetime-local', 'class': 'form-control'})

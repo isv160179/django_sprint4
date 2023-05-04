@@ -82,13 +82,13 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'ru-RU'
 
-TIME_ZONE = 'Europe/Moscow'
+TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = False
+USE_TZ = True
 
 STATIC_URL = '/static/'
 
@@ -102,7 +102,7 @@ INTERNAL_IPS = [
     '127.0.0.1',
 ]
 
-CSRF_FAILURE_VIEW = 'core.views.handler403crf'
+CSRF_FAILURE_VIEW = 'pages.views.handler403crf'
 
 EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
 EMAIL_FILE_PATH = BASE_DIR / 'sent_emails'
