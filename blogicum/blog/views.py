@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from django.contrib.auth import get_user_model
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
 from django.shortcuts import render, get_object_or_404, redirect
@@ -9,7 +10,7 @@ from django.utils.timezone import make_aware
 from django.views.generic import \
     ListView, DetailView, UpdateView, DeleteView, CreateView
 
-from blog.forms import PostForm
+from blog.forms import PostForm, CommentaryForm
 from blog.models import Post, Category
 from core.forms import ProfileEdit
 
@@ -130,4 +131,3 @@ class PostDeleteView(
 ):
     model = Post
     success_url = reverse_lazy('blog:index')
-

@@ -1,6 +1,6 @@
 from django.forms import ModelForm, DateTimeInput
 
-from blog.models import Post
+from blog.models import Post, Commentary
 
 
 class PostForm(ModelForm):
@@ -11,3 +11,9 @@ class PostForm(ModelForm):
             'pub_date': DateTimeInput(
                 attrs={'type': 'datetime-local', 'class': 'form-control'})
         }
+
+
+class CommentaryForm(ModelForm):
+    class Meta:
+        model = Commentary
+        fields = ('text',)
