@@ -75,41 +75,49 @@ def category_posts(request, category_slug):
 
 
 @login_required
-def create_comment(request, pk):
-    post = get_object_or_404(Post, pk=pk)
+def create_comment(request, post_pk):
+    pass
+    post = get_object_or_404(Post, pk=post_pk)
     form = CommentForm(request.POST)
     if form.is_valid():
         comment = form.save(commit=False)
         comment.author = request.user
         post.comment_count += 1
         post.save()
-        print(post.comment_count)
-        comment.post_comment = post
+        comment.post_id = post
         comment.save()
-    return redirect('blog:post_detail', pk=pk)
-
-
-@login_required
-def delete_comment(request, post_pk, comment_pk):
-    comment = get_object_or_404(Commentary, pk=comment_pk)
-    if comment.author == request.user:
-        post = get_object_or_404(Post, pk=post_pk)
-        post.comment_count -= 1
-        post.save()
-        comment.delete()
-    return redirect('blog:post_detail', post_pk)
+    return redirect('blog:post_detail', pk=post_pk)
 
 
 @login_required
 def edit_comment(request, post_pk, comment_pk):
     comment = get_object_or_404(Commentary, pk=comment_pk)
     post = get_object_or_404(Post, pk=post_pk)
-    form = CommentForm()
-    template = 'blog/detail.html'
-    if comment.author == request.user:
-        form = CommentForm(instance=comment)
-    context = {'form': form, 'pk': post_pk, 'post': post}
-    return render(request, template, context)
+    form = CommentForm(request.POST or None, instance=comment)
+    context = {'form': form, 'comment': comment, 'post': post}
+    if comment.author != request.user:
+        return redirect('blog:post_detail', post_pk)
+    if form.is_valid():
+        form.save()
+        return redirect('blog:post_detail', post_pk)
+    return render(request, 'blog/comment.html', context)
+
+
+@login_required
+def delete_comment(request, post_pk, comment_pk):
+    instance = get_object_or_404(Commentary, pk=comment_pk)
+    # form = CommentForm(instance=instance)
+    context = {}
+    # context = {'form': form}
+    if instance.author != request.user:
+        return redirect('blog:post_detail', post_pk)
+    if request.method == 'POST':
+        post = get_object_or_404(Post, pk=post_pk)
+        post.comment_count -= 1
+        post.save()
+        instance.delete()
+        return redirect('blog:post_detail', post_pk)
+    return render(request, 'blog/comment.html', context)
 
 
 class UserPermissionsDispatcherPost(LoginRequiredMixin):

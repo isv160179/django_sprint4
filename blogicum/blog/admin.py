@@ -74,13 +74,13 @@ class CommentaryAdmin(admin.ModelAdmin):
     list_display = (
         'id',
         'text',
-        'post_comment',
+        'post_id',
         'created_at',
         'author'
     )
     search_fields = (
         'text',
-        'post_comment',
+        'post_id',
         'author'
     )
     list_display_links = (

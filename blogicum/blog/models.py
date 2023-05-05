@@ -98,7 +98,7 @@ class Post(PublishedCreatedModel):
 
 class Commentary(models.Model):
     text = models.TextField('Текст комментария')
-    post_comment = models.ForeignKey(
+    post_id = models.ForeignKey(
         Post,
         on_delete=models.CASCADE,
         related_name='comments',
@@ -115,4 +115,4 @@ class Commentary(models.Model):
         return self.text
 
     def get_absolute_url(self):
-        return reverse('blog:post_detail', kwargs={'pk': self.post_comment.pk})
+        return reverse('blog:post_detail', kwargs={'pk': self.post_id.pk})

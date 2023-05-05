@@ -46,7 +46,7 @@ urlpatterns = [
         name='delete_post'
     ),
     path(
-        'comment/<int:pk>/',
+        'comment/<int:post_pk>/',
         views.create_comment,
         name='add_comment'
     ),
