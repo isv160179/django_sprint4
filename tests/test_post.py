@@ -158,13 +158,13 @@ def _test_edit_post(
         urls_start_with=KeyVal(
             key=post_url.replace(
                 f'/{item_to_edit.id}/',
-                '/<post_id>/'
+                '/<post>/'
             ),
             val=post_url
         ))
     assert edit_url.key == f'/posts/{item_to_edit.id}/edit/', (
         'Убедитесь, что страница редактирования публикации имеет '
-        'адрес posts/<post_id>/edit/.'
+        'адрес posts/<post>/edit/.'
     )
     edit_url = KeyVal(
         re.sub(r'\d+', str(item_to_edit.id), edit_url.key), edit_url.val)

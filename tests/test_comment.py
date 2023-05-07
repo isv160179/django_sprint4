@@ -112,7 +112,7 @@ def test_comment(
         urls_start_with=KeyVal(
             key=post_url.replace(
                 f'/{post_with_published_location.id}/',
-                '/<post_id>/'
+                '/<post>/'
             ),
             val=post_url
         ), user_client=user_client)

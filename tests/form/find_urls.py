@@ -43,7 +43,7 @@ def get_url_display_names(
         link_tags: Sequence[Tag]
 ) -> Dict[str, str]:
     """Map urls to their generic form (e.g.
-    /post/<post_id>/comment_edit/<comment_id>/)"""
+    /post/<post>/comment_edit/<comment_id>/)"""
     result = {}
 
     def get_url_template(url: str) -> str:

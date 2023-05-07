@@ -50,7 +50,7 @@ def create_comment(request, post_pk):
         comment.author = request.user
         post.comment_count += 1
         post.save()
-        comment.post_id = post
+        comment.post = post
         comment.save()
     return redirect('blog:post_detail', pk=post_pk)
 
@@ -58,9 +58,8 @@ def create_comment(request, post_pk):
 @login_required
 def edit_comment(request, post_pk, comment_pk):
     comment = get_object_or_404(Commentary, pk=comment_pk)
-    post = get_object_or_404(Post, pk=post_pk)
     form = CommentForm(request.POST or None, instance=comment)
-    context = {'form': form, 'comment': comment, 'post': post}
+    context = {'form': form, 'comment': comment}
     if comment.author != request.user:
         return redirect('blog:post_detail', post_pk)
     if form.is_valid():

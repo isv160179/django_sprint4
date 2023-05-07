@@ -70,7 +70,7 @@ def find_edit_and_delete_urls(
     else:
         raise AssertionError(
             'Убедитесь, что страница редактирования публикации имеет '
-            'адрес posts/<post_id>/edit/.'
+            'адрес posts/<post>/edit/.'
         )
 
     post_url_display_names = get_url_display_names(
