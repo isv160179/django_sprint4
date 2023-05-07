@@ -11,6 +11,7 @@ from django.views.generic import \
     ListView, DetailView, UpdateView, DeleteView, CreateView
 
 from blog.forms import PostForm, CommentForm
+from blog.mixins import UserPermissionsDispatcherPost
 from blog.models import Post, Category, Commentary
 from core.forms import ProfileEdit
 
@@ -118,14 +119,6 @@ def delete_comment(request, post_pk, comment_pk):
         instance.delete()
         return redirect('blog:post_detail', post_pk)
     return render(request, 'blog/comment.html', context)
-
-
-class UserPermissionsDispatcherPost(LoginRequiredMixin):
-    def dispatch(self, request, *args, **kwargs):
-        post = get_object_or_404(Post, pk=kwargs['pk'])
-        if post.author != request.user:
-            return redirect(post)
-        return super().dispatch(request, *args, **kwargs)
 
 
 class PostListView(ListView):
