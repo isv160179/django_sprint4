@@ -38,5 +38,5 @@ if settings.DEBUG:
 
     urlpatterns += (path('__debug__/', include(debug_toolbar.urls)),)
 
-handler404 = 'pages.views.handler404'
-handler500 = 'pages.views.handler500'
+handler404 = 'pages.views.page_not_found'
+handler500 = 'pages.views.server_error'
