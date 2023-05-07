@@ -2,7 +2,9 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
 from blogicum import settings
-from core.views import RegistrationView
+
+from users import views
+from users.views import RegistrationView
 
 urlpatterns = [
     path(
@@ -16,6 +18,16 @@ urlpatterns = [
     path(
         'pages/',
         include('pages.urls', namespace='pages')
+    ),
+    path(
+        'profile/<slug:username>/',
+        views.profile,
+        name='profile'
+    ),
+    path(
+        'edit_profile/',
+        views.edit_profile,
+        name='edit_profile'
     ),
     path(
         'auth/registration/',
