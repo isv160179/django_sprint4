@@ -2,6 +2,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.core.paginator import Paginator
+from django.db.models import Count
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse_lazy
 from django.views.generic import CreateView
@@ -20,7 +21,13 @@ def profile(request, username):
         'location',
         'author',
         'category'
-    ).filter(author__username=username).order_by('-pub_date')
+    ).filter(
+        author__username=username
+    ).order_by(
+        '-pub_date'
+    ).annotate(
+        comment_count=Count('comments')
+    )
     paginator = Paginator(post_list, POST_ON_PAGE)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)

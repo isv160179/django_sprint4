@@ -3,6 +3,7 @@ from datetime import datetime
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
+from django.db.models import Count
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy, reverse
 from django.utils.timezone import make_aware
@@ -30,7 +31,11 @@ def category_posts(request, category_slug):
         category__slug=category_slug,
         is_published=True,
         pub_date__date__lte=make_aware(datetime.now()),
-    ).order_by('-pub_date')
+    ).order_by(
+        '-pub_date'
+    ).annotate(
+        comment_count=Count('comments')
+    )
     paginator = Paginator(post_list, POST_ON_PAGE)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
@@ -48,8 +53,6 @@ def create_comment(request, post_pk):
     if form.is_valid():
         comment = form.save(commit=False)
         comment.author = request.user
-        post.comment_count += 1
-        post.save()
         comment.post = post
         comment.save()
     return redirect('blog:post_detail', pk=post_pk)
@@ -75,9 +78,6 @@ def delete_comment(request, post_pk, comment_pk):
     if instance.author != request.user:
         return redirect('blog:post_detail', post_pk)
     if request.method == 'POST':
-        post = get_object_or_404(Post, pk=post_pk)
-        post.comment_count -= 1
-        post.save()
         instance.delete()
         return redirect('blog:post_detail', post_pk)
     return render(request, 'blog/comment.html', context)
@@ -96,7 +96,7 @@ class PostListView(ListView):
         is_published=True,
         category__is_published=True,
         pub_date__lte=make_aware(datetime.now())
-    )
+    ).annotate(comment_count=Count('comments'))
 
 
 class PostDetailView(DetailView):

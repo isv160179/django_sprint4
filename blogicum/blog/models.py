@@ -80,10 +80,6 @@ class Post(PublishedCreatedModel):
         upload_to='posts_img',
         blank=True
     )
-    comment_count = models.PositiveIntegerField(
-        'Количество комментариев',
-        default=0
-    )
 
     class Meta:
         verbose_name = 'публикация'
