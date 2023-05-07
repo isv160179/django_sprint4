@@ -7,8 +7,8 @@ from django.core.paginator import Paginator
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy, reverse
 from django.utils.timezone import make_aware
-from django.views.generic import \
-    ListView, DetailView, UpdateView, DeleteView, CreateView
+from django.views.generic import ListView, DetailView
+from django.views.generic import UpdateView, DeleteView, CreateView
 
 from blog.forms import PostForm, CommentForm
 from blog.mixins import UserPermissionsDispatcherPost
@@ -77,7 +77,6 @@ def category_posts(request, category_slug):
 
 @login_required
 def create_comment(request, post_pk):
-    pass
     post = get_object_or_404(Post, pk=post_pk)
     form = CommentForm(request.POST)
     if form.is_valid():
@@ -107,9 +106,7 @@ def edit_comment(request, post_pk, comment_pk):
 @login_required
 def delete_comment(request, post_pk, comment_pk):
     instance = get_object_or_404(Commentary, pk=comment_pk)
-    # form = CommentForm(instance=instance)
     context = {}
-    # context = {'form': form}
     if instance.author != request.user:
         return redirect('blog:post_detail', post_pk)
     if request.method == 'POST':
