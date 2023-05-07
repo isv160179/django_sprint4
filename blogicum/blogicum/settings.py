@@ -21,6 +21,7 @@ INSTALLED_APPS = [
     'blog.apps.BlogConfig',
     'pages.apps.PagesConfig',
     'core.apps.CoreConfig',
+    'users.apps.UsersConfig',
     'debug_toolbar',
     'django_bootstrap5',
 ]
@@ -112,3 +113,5 @@ LOGIN_REDIRECT_URL = 'blog:index'
 
 MEDIA_ROOT = BASE_DIR / 'media'
 MEDIA_URL = 'media/'
+
+POST_ON_PAGE = 10
