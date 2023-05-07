@@ -89,11 +89,11 @@ class Post(PublishedCreatedModel):
         verbose_name = 'публикация'
         verbose_name_plural = 'Публикации'
 
-    def __str__(self):
-        return self.title
-
     def get_absolute_url(self):
         return reverse('blog:post_detail', kwargs={'pk': self.pk})
+
+    def __str__(self):
+        return self.title
 
 
 class Commentary(models.Model):
@@ -113,6 +113,3 @@ class Commentary(models.Model):
 
     def __str__(self):
         return self.text
-
-    def get_absolute_url(self):
-        return reverse('blog:post_detail', kwargs={'pk': self.post_id.pk})
