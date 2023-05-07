@@ -17,6 +17,8 @@ from core.forms import ProfileEdit
 
 User = get_user_model()
 
+POST_ON_PAGE = 10
+
 
 def profile(request, username):
     template = 'blog/profile.html'
@@ -26,7 +28,7 @@ def profile(request, username):
         'author',
         'category'
     ).filter(author__username=username).order_by('-pub_date')
-    paginator = Paginator(post_list, 10)
+    paginator = Paginator(post_list, POST_ON_PAGE)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     context = {
@@ -65,7 +67,7 @@ def category_posts(request, category_slug):
         is_published=True,
         pub_date__date__lte=make_aware(datetime.now()),
     ).order_by('-pub_date')
-    paginator = Paginator(post_list, 10)
+    paginator = Paginator(post_list, POST_ON_PAGE)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     context = {
@@ -121,7 +123,7 @@ def delete_comment(request, post_pk, comment_pk):
 class PostListView(ListView):
     model = Post
     ordering = '-pub_date'
-    paginate_by = 10
+    paginate_by = POST_ON_PAGE
     template_name = 'blog/index.html'
     queryset = Post.objects.select_related(
         'author',
