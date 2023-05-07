@@ -6,6 +6,8 @@ from blogicum import settings
 from users import views
 from users.views import RegistrationView
 
+from users import views
+
 urlpatterns = [
     path(
         'admin/',
