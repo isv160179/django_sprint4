@@ -1,7 +1,6 @@
 from datetime import datetime
 
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.paginator import Paginator
 from django.db.models import Count
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy, reverse
@@ -12,7 +11,7 @@ from django.views.generic import UpdateView, DeleteView, CreateView
 from blog.forms import PostForm, CommentForm
 from blog.mixins import UserPermissionsDispatcher
 from blog.models import Post, Category, Commentary
-from blogicum.settings import POST_ON_PAGE
+from core.utils import paginator
 
 
 class CommentDeleteView(UserPermissionsDispatcher,
@@ -34,18 +33,25 @@ class CommentDeleteView(UserPermissionsDispatcher,
 
 class PostListView(ListView):
     model = Post
-    ordering = '-pub_date'
-    paginate_by = POST_ON_PAGE
     template_name = 'blog/index.html'
-    queryset = Post.objects.select_related(
-        'author',
-        'category',
-        'location',
-    ).filter(
-        is_published=True,
-        category__is_published=True,
-        pub_date__lte=make_aware(datetime.now())
-    ).annotate(comment_count=Count('comments'))
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        post_list = Post.objects.select_related(
+            'location',
+            'author',
+            'category'
+        ).filter(
+            is_published=True,
+            category__is_published=True,
+            pub_date__lte=make_aware(datetime.now())
+        ).order_by(
+            '-pub_date'
+        ).annotate(
+            comment_count=Count('comments')
+        )
+        context['page_obj'] = paginator(self.request, post_list)
+        return context
 
 
 class PostDetailView(DetailView):
@@ -93,7 +99,6 @@ class CategoryDetailView(DetailView):
     model = Category
     template_name = 'blog/category.html'
     slug_url_kwarg = 'category_slug'
-    paginate_by = POST_ON_PAGE
 
     def dispatch(self, request, *args, **kwargs):
         self.category = get_object_or_404(
@@ -118,9 +123,7 @@ class CategoryDetailView(DetailView):
         ).annotate(
             comment_count=Count('comments')
         )
-        paginator = Paginator(post_list, POST_ON_PAGE)
-        page_number = self.request.GET.get('page')
-        context['page_obj'] = paginator.get_page(page_number)
+        context['page_obj'] = paginator(self.request, post_list)
         return context
 
 

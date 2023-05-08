@@ -7,4 +7,4 @@ User = get_user_model()
 class ProfileEdit(ModelForm):
     class Meta:
         model = User
-        fields = ['username', 'first_name', 'last_name', 'email', ]
+        fields = ('username', 'first_name', 'last_name', 'email')

@@ -113,5 +113,3 @@ LOGIN_REDIRECT_URL = 'blog:index'
 
 MEDIA_ROOT = BASE_DIR / 'media'
 MEDIA_URL = 'media/'
-
-POST_ON_PAGE = 10

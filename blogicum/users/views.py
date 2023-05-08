@@ -1,15 +1,14 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
-from django.core.paginator import Paginator
 from django.db.models import Count
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse_lazy
 from django.views.generic import CreateView
 
 from blog.models import Post
-from blogicum.settings import POST_ON_PAGE
 from users.forms import ProfileEdit
+from core.utils import paginator
 
 User = get_user_model()
 
@@ -28,12 +27,9 @@ def profile(request, username):
     ).annotate(
         comment_count=Count('comments')
     )
-    paginator = Paginator(post_list, POST_ON_PAGE)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
     context = {
         'profile': profile,
-        'page_obj': page_obj,
+        'page_obj': paginator(request, post_list),
     }
     return render(request, template, context)
 
