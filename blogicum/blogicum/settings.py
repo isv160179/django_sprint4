@@ -4,7 +4,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'django-insecure-6r^=zj#f32yn7xn!$3@=d%*qn=*9osof9l70cmi(xfn@tfwdp6'
 
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = [
     'localhost',
@@ -113,6 +113,8 @@ LOGIN_REDIRECT_URL = 'blog:index'
 
 MEDIA_ROOT = BASE_DIR / 'media'
 MEDIA_URL = 'media/'
+
+POST_ON_PAGE = 10
 
 AUTH_USER_MODEL = 'users.User'
 
