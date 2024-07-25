@@ -9,6 +9,10 @@ DEBUG = True
 ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
+    'isv.pythonanywhere.com',
+    'www.isv.pythonanywhere.com',
+    'ISV.pythonanywhere.com',
+    'www.ISV.pythonanywhere.com',
 ]
 
 INSTALLED_APPS = [
@@ -87,7 +91,7 @@ TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
-USE_L10N = True
+USE_L10N = False
 
 USE_TZ = True
 
@@ -105,8 +109,28 @@ INTERNAL_IPS = [
 
 CSRF_FAILURE_VIEW = 'pages.views.csrf_failure'
 
-EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
-EMAIL_FILE_PATH = BASE_DIR / 'sent_emails'
+# EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+# EMAIL_FILE_PATH = BASE_DIR / 'sent_emails'
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+# EMAIL_HOST = 'smtp.yandex.ru'
+# EMAIL_PORT = 465
+# EMAIL_HOST_USER = 'Isv16011979@yandex.ru'
+# EMAIL_HOST_PASSWORD = 'fmdhjtltqzoqjnlh'
+# EMAIL_USE_TLS = False
+# EMAIL_USE_SSL = True
+# SERVER_EMAIL = EMAIL_HOST_USER
+# DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'isv160179@gmail.com'
+EMAIL_HOST_PASSWORD = 'gocxqmcmrzzxojtl'
+EMAIL_USE_TLS = True
+SERVER_EMAIL = EMAIL_HOST_USER
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
 
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'blog:index'
@@ -117,3 +141,5 @@ MEDIA_URL = 'media/'
 AUTH_USER_MODEL = 'users.User'
 
 POST_ON_PAGE = 10
+
+SITE_NAME = 'www.isv.pythonanywhere.com'

@@ -11,24 +11,7 @@ from django.views.generic import UpdateView, DeleteView, CreateView
 from blog.forms import PostForm, CommentForm
 from blog.mixins import UserPermissionsDispatcher
 from blog.models import Post, Category, Commentary
-from core.utils import paginator
-
-
-class CommentDeleteView(UserPermissionsDispatcher,
-                        DeleteView):
-    model = Commentary
-    template_name = 'blog/comment.html'
-    pk_url_kwarg = 'comment_pk'
-
-    def dispatch(self, request, *args, **kwargs):
-        self.pk = kwargs['pk']
-        return super().dispatch(request, *args, **kwargs)
-
-    def get_success_url(self):
-        return reverse(
-            'blog:post_detail',
-            kwargs={'pk': self.pk}
-        )
+from core.utils import paginate
 
 
 class PostListView(ListView):
@@ -50,7 +33,7 @@ class PostListView(ListView):
         ).annotate(
             comment_count=Count('comments')
         )
-        context['page_obj'] = paginator(self.request, post_list)
+        context['page_obj'] = paginate(self.request, post_list)
         return context
 
 
@@ -123,7 +106,7 @@ class CategoryDetailView(DetailView):
         ).annotate(
             comment_count=Count('comments')
         )
-        context['page_obj'] = paginator(self.request, post_list)
+        context['page_obj'] = paginate(self.request, post_list)
         return context
 
 
@@ -153,6 +136,23 @@ class CommentEditView(UserPermissionsDispatcher,
                       UpdateView):
     model = Commentary
     form_class = CommentForm
+    template_name = 'blog/comment.html'
+    pk_url_kwarg = 'comment_pk'
+
+    def dispatch(self, request, *args, **kwargs):
+        self.pk = kwargs['pk']
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_success_url(self):
+        return reverse(
+            'blog:post_detail',
+            kwargs={'pk': self.pk}
+        )
+
+
+class CommentDeleteView(UserPermissionsDispatcher,
+                        DeleteView):
+    model = Commentary
     template_name = 'blog/comment.html'
     pk_url_kwarg = 'comment_pk'
 
